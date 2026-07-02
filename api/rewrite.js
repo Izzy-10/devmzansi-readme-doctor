@@ -19,6 +19,8 @@ export default async function handler(req, res) {
 
 Write the rewritten version and the diagnosis/changes labels in ${selectedLang}. If ${selectedLang} is isiZulu, write naturally in isiZulu — do not just translate word-for-word, adapt the tone to read naturally for a South African developer audience. Keep technical terms (project names, tech stack names, links) as-is.
 
+IMPORTANT: The rewritten version must be a genuine rewrite, not a copy or a light rephrase of the original. Change sentence structure, word choice, and framing. If the original is very short or vague, expand it with reasonable, generic improvements (stronger framing, clearer purpose) rather than repeating the same few words back.
+
 Original text:
 """
 ${original}
