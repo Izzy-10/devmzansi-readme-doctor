@@ -39,3 +39,22 @@ IBM Bob was used as the primary development tool throughout the build:
 
 - DevMzansi: https://dev-mzansi.vercel.app
 - GitHub: https://github.com/Izzy-10
+
+Reimagine Creative Industries with AI — specifically the "personalized creative assistants" and "AI creative partners" solution areas.
+
+## How IBM Bob Was Used
+
+IBM Bob was used as the primary development tool throughout the build:
+- **Ask mode** to explore prompt structures for reliable structured JSON output
+- **Plan mode** to generate the implementation plan for the before/after comparison UI
+- **Code mode** to build out the component structure and wire up the AI call
+- **Advanced mode** for debugging response parsing and edge cases (empty input, malformed JSON)
+
+## Team
+
+- Sizwe Sibiya (Izzy-10) — WeThinkCode_ Durban, founder of DevMzansi
+
+## Links
+
+- DevMzansi: https://dev-mzansi.vercel.app
+- GitHub: https://github.com/Izzy-10
