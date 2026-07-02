@@ -28,7 +28,7 @@ Return ONLY a JSON object, no markdown fences, no preamble, with exactly these k
 {
   "diagnosis": ["short tag describing a weakness found, e.g. 'Weak opening line'", "2-4 more short diagnostic tags"],
   "rewritten": "the full rewritten version, same length ballpark, clearer structure and stronger opening",
-  "changes": ["short bullet describing one specific change made", "3-5 more short bullets"]
+  "changes": ["ONE short plain phrase per change, max 6 words, e.g. 'Stronger opening line' or 'Cut the jargon' — no full sentences, no explaining why", "3-5 more short phrases, same style"]
 }`;
 
   try {
