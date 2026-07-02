@@ -405,7 +405,10 @@
       <div class="panel after">
         <div class="panel-label">✦ Rewritten</div>
         <div class="panel-body" id="body-after"></div>
-        <button class="copy-btn" data-target="body-after">Copy rewritten version</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="copy-btn" data-target="body-after">Copy rewritten version</button>
+          <button class="copy-btn" id="speak-btn">🔊 Read aloud</button>
+        </div>
       </div>
     </div>
 
@@ -451,6 +454,43 @@ const eqFollowup = document.getElementById('eq-followup');
 let originalText = '';
 let currentRewritten = '';
 let selectedLang = 'English';
+
+const speakBtn = document.getElementById('speak-btn');
+let isSpeaking = false;
+
+speakBtn.addEventListener('click', () => {
+  const text = document.getElementById('body-after').innerText;
+  if(!text) return;
+
+  if(isSpeaking){
+    window.speechSynthesis.cancel();
+    speakBtn.textContent = '🔊 Read aloud';
+    isSpeaking = false;
+    return;
+  }
+
+  if(!('speechSynthesis' in window)){
+    errorBox.textContent = 'Text-to-speech is not supported in this browser.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.98;
+  utterance.pitch = 1;
+  utterance.onend = () => {
+    speakBtn.textContent = '🔊 Read aloud';
+    isSpeaking = false;
+  };
+  utterance.onerror = () => {
+    speakBtn.textContent = '🔊 Read aloud';
+    isSpeaking = false;
+  };
+
+  window.speechSynthesis.speak(utterance);
+  speakBtn.textContent = '⏹ Stop';
+  isSpeaking = true;
+});
 
 const langButtons = document.querySelectorAll('.lang-btn');
 langButtons.forEach(b => {
