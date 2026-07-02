@@ -111,6 +111,21 @@
   .row{display:flex; align-items:center; justify-content:space-between; margin-top:14px; gap:12px; flex-wrap:wrap;}
   .hint{font-size:12.5px; color:var(--text-muted);}
 
+  .lang-select{display:flex; gap:6px;}
+  .lang-btn{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text-muted);
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    padding:7px 13px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .lang-btn:hover{color:var(--text);}
+  .lang-btn.active{background:rgba(217,169,78,0.12); border-color:var(--gold); color:var(--gold-soft);}
+
   button.generate{
     background:var(--gold);
     color:#0A0A0D;
@@ -343,6 +358,13 @@
       <textarea id="readme-input" placeholder="Paste your README.md content here, or a rough project description you want sharpened..."></textarea>
       <div class="row">
         <span class="hint">Rough drafts welcome — that's the point.</span>
+        <div class="lang-select" id="lang-select">
+          <button class="lang-btn active" data-lang="English">English</button>
+          <button class="lang-btn" data-lang="isiZulu">isiZulu</button>
+        </div>
+      </div>
+      <div class="row">
+        <span class="hint"></span>
         <button class="generate" id="generate-btn">
           <span id="btn-label">Diagnose &amp; rewrite</span>
         </button>
@@ -407,6 +429,16 @@ const eqFollowup = document.getElementById('eq-followup');
 
 let originalText = '';
 let currentRewritten = '';
+let selectedLang = 'English';
+
+const langButtons = document.querySelectorAll('.lang-btn');
+langButtons.forEach(b => {
+  b.addEventListener('click', () => {
+    langButtons.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    selectedLang = b.dataset.lang;
+  });
+});
 
 document.querySelectorAll('.copy-btn').forEach(b => {
   b.addEventListener('click', () => {
@@ -434,6 +466,8 @@ async function generate(){
   eq.classList.add('active');
 
   const prompt = `You are an editor helping South African developers make their GitHub READMEs and project descriptions sell their work better, in a confident but grounded voice — not corporate, not overhyped.
+
+Write the rewritten version and the diagnosis/changes labels in ${selectedLang}. If ${selectedLang} is isiZulu, write naturally in isiZulu — do not just translate word-for-word, adapt the tone to read naturally for a South African developer audience. Keep technical terms (project names, tech stack names, links) as-is.
 
 Original text:
 """
@@ -517,14 +551,14 @@ async function refine(){
   followupBtn.disabled = true;
   eqFollowup.classList.add('active');
 
-  const prompt = `You previously rewrote a developer's README/project text. Here is the current rewritten version:
+  const prompt = `You previously rewrote a developer's README/project text in ${selectedLang}. Here is the current rewritten version:
 """
 ${currentRewritten}
 """
 
 The writer wants this specific tweak: "${request}"
 
-Apply that tweak and return ONLY a JSON object, no markdown fences, no preamble, with exactly these keys:
+Apply that tweak, keeping the response in ${selectedLang}, and return ONLY a JSON object, no markdown fences, no preamble, with exactly these keys:
 {
   "rewritten": "the updated full version with the tweak applied",
   "changes": ["short bullet describing what was adjusted for this tweak", "1-2 more if relevant"]
