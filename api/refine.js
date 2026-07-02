@@ -24,7 +24,7 @@ The writer wants this specific tweak: "${tweakRequest}"
 Apply that tweak, keeping the response in ${selectedLang}, and return ONLY a JSON object, no markdown fences, no preamble, with exactly these keys:
 {
   "rewritten": "the updated full version with the tweak applied",
-  "changes": ["short bullet describing what was adjusted for this tweak", "1-2 more if relevant"]
+  "changes": ["ONE short plain phrase, max 6 words, describing what changed — no full sentences", "1-2 more if relevant, same style"]
 }`;
 
   try {
