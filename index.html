@@ -486,45 +486,18 @@ async function generate(){
   btnLabel.textContent = 'Diagnosing…';
   eq.classList.add('active');
 
-  const prompt = `You are an editor helping South African developers make their GitHub READMEs and project descriptions sell their work better, in a confident but grounded voice — not corporate, not overhyped.
-
-Write the rewritten version and the diagnosis/changes labels in ${selectedLang}. If ${selectedLang} is isiZulu, write naturally in isiZulu — do not just translate word-for-word, adapt the tone to read naturally for a South African developer audience. Keep technical terms (project names, tech stack names, links) as-is.
-
-Original text:
-"""
-${original}
-"""
-
-Return ONLY a JSON object, no markdown fences, no preamble, with exactly these keys:
-{
-  "diagnosis": ["short tag describing a weakness found, e.g. 'Weak opening line'", "2-4 more short diagnostic tags"],
-  "rewritten": "the full rewritten version, same length ballpark, clearer structure and stronger opening",
-  "changes": ["short bullet describing one specific change made", "3-5 more short bullets"]
-}`;
-
   try{
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("/api/rewrite", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
+      body: JSON.stringify({ original, lang: selectedLang })
     });
 
     if(!response.ok){
       throw new Error("Request failed with status " + response.status);
     }
 
-    const data = await response.json();
-    const textBlock = data.content.find(b => b.type === "text");
-    if(!textBlock){
-      throw new Error("No text returned");
-    }
-
-    const cleaned = textBlock.text.replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(cleaned);
+    const parsed = await response.json();
 
     originalText = original;
     currentRewritten = parsed.rewritten || '';
@@ -572,42 +545,18 @@ async function refine(){
   followupBtn.disabled = true;
   eqFollowup.classList.add('active');
 
-  const prompt = `You previously rewrote a developer's README/project text in ${selectedLang}. Here is the current rewritten version:
-"""
-${currentRewritten}
-"""
-
-The writer wants this specific tweak: "${request}"
-
-Apply that tweak, keeping the response in ${selectedLang}, and return ONLY a JSON object, no markdown fences, no preamble, with exactly these keys:
-{
-  "rewritten": "the updated full version with the tweak applied",
-  "changes": ["short bullet describing what was adjusted for this tweak", "1-2 more if relevant"]
-}`;
-
   try{
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("/api/refine", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
+      body: JSON.stringify({ currentRewritten, request, lang: selectedLang })
     });
 
     if(!response.ok){
       throw new Error("Request failed with status " + response.status);
     }
 
-    const data = await response.json();
-    const textBlock = data.content.find(b => b.type === "text");
-    if(!textBlock){
-      throw new Error("No text returned");
-    }
-
-    const cleaned = textBlock.text.replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(cleaned);
+    const parsed = await response.json();
 
     currentRewritten = parsed.rewritten || currentRewritten;
     document.getElementById('body-after').textContent = currentRewritten;
