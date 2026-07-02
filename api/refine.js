@@ -21,7 +21,7 @@ ${currentRewritten}
 
 The writer wants this specific tweak: "${tweakRequest}"
 
-Apply that tweak, keeping the response in ${selectedLang}, and return ONLY a JSON object, no markdown fences, no preamble, with exactly these keys:
+Apply that tweak in a way that produces a genuinely different result — do not just copy the current version back with minor edits unless the tweak specifically calls for a small change. Keeping the response in ${selectedLang}, return ONLY a JSON object, no markdown fences, no preamble, with exactly these keys:
 {
   "rewritten": "the updated full version with the tweak applied",
   "changes": ["ONE short plain phrase, max 6 words, describing what changed — no full sentences", "1-2 more if relevant, same style"]
