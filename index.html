@@ -321,6 +321,33 @@
   .followup-btn:disabled{opacity:0.5; cursor:not-allowed;}
   #eq-followup{margin-top:12px;}
 
+  .thread{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .thread:empty{display:none;}
+  .msg{
+    max-width:85%;
+    padding:10px 14px;
+    border-radius:12px;
+    font-size:13.5px;
+    line-height:1.5;
+  }
+  .msg.user{
+    align-self:flex-end;
+    background:rgba(217,169,78,0.12);
+    border:1px solid rgba(217,169,78,0.3);
+    color:var(--gold-soft);
+  }
+  .msg.ai{
+    align-self:flex-start;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text-muted);
+  }
+
   .about-tool{
     margin-top:60px;
     padding-top:24px;
@@ -418,17 +445,14 @@
     </div>
 
     <div class="followup" id="followup">
-      <label for="followup-input">Want it different? Ask for a tweak</label>
+      <label for="followup-input">Want it different? Keep the conversation going</label>
+      <div class="thread" id="thread"></div>
       <div class="followup-row">
         <input type="text" id="followup-input" placeholder="e.g. make the opening punchier, or shorten it">
         <button class="followup-btn" id="followup-btn">Refine</button>
       </div>
       <div class="eq" id="eq-followup"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
-  </section>
-
-  <section class="about-tool">
-    <p>Built by <a href="https://github.com/Izzy-10" target="_blank" rel="noopener">Sizwe Sibiya</a>, a frontend developer student at WeThinkCode_ Durban and founder of DevMzansi. README Doctor started as a way to help the community turn solid project work into content that actually gets noticed.</p>
   </section>
 
   <footer>
@@ -578,10 +602,22 @@ async function generate(){
   }
 }
 
+const thread = document.getElementById('thread');
+
+function addMessage(role, text){
+  const bubble = document.createElement('div');
+  bubble.className = 'msg ' + role;
+  bubble.textContent = text;
+  thread.appendChild(bubble);
+  thread.scrollTop = thread.scrollHeight;
+}
+
 async function refine(){
   const request = followupInput.value.trim();
   if(!request || !currentRewritten) return;
 
+  addMessage('user', request);
+  followupInput.value = '';
   followupBtn.disabled = true;
   eqFollowup.classList.add('active');
 
@@ -608,10 +644,14 @@ async function refine(){
       notesList.appendChild(li);
     });
 
-    followupInput.value = '';
+    const summary = (parsed.changes && parsed.changes.length)
+      ? 'Done — ' + parsed.changes.join(', ').toLowerCase()
+      : 'Updated the rewrite.';
+    addMessage('ai', summary);
 
   }catch(err){
     console.error(err);
+    addMessage('ai', "Couldn't apply that one — try rephrasing it.");
     errorBox.textContent = 'Could not apply that tweak. Try rephrasing it.';
     errorBox.style.display = 'block';
   }finally{
